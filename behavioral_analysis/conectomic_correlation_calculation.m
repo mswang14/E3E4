@@ -530,3 +530,65 @@ rsqText = strcat('R^2 = ', num2str(Rsq1));
 text(325, 3, rsqText);
 
 
+%% new appendix v boxplots
+
+% import the legend
+roi_legend = readtable('connectome_data/CHASSSYMMETRIC2Legends09072017.xlsx');
+genotype_correspond = readtable('corresponding_runnos_boxplots.xlsx');
+
+%create indices for specific groupings
+genotypes = table2array(genotype_correspond(:,5));
+C57youngIndices = strcmp(genotypes, 'C57young');
+C57oldIndices = strcmp(genotypes, 'C57old');
+APOE3Indices = strcmp(genotypes, 'APOE3');
+APOE4Indices = strcmp(genotypes, 'APOE4');
+
+figNum = 1;
+
+% netprop_roi_data is organized as such: (roi,runno(in order),measure)
+% for roi=1:332
+for roi=70:332
+    % pull out roi data
+    plotROI = permute(netprop_roi_data(roi,:,:), [2 3 1]);
+    % pull out roi name
+    ROIname = [strrep(char(roi_legend{roi,1}), '_', ' ') ' (' char(roi_legend{roi,3}) ')'];
+    for measure=1:14
+        % pull out measure name
+        measureName = strrep(char(labels_netprop_roi(measure)), '_', ' ');
+        % pull out measure data
+        measureData = plotROI(:,measure);
+        % organize measure data by group
+        C57youngY = measureData(C57youngIndices,:);
+        C57oldY = measureData(C57oldIndices,:);
+        APOE3Y = measureData(APOE3Indices,:);
+        APOE4Y = measureData(APOE4Indices,:);
+        
+        CombinedData = {C57youngY; C57oldY; APOE3Y; APOE4Y};
+
+        % plot data
+        h=figure(figNum)
+        clf(figNum)
+%         figNum = figNum+1;
+        set (h, 'Visible', 'off')
+        hold on
+
+        aboxplot(CombinedData);
+
+        hold off
+        grid on
+        legend({'C57 young', 'C57 old', 'APOE3', 'APOE4'})
+        xlabel(ROIname)
+        ylabel(measureName)
+        set(gca, 'XTickLabel', {' '})
+        
+        saveas(h,['figures/' ROIname '_' measureName '.png'])
+        
+    end
+end
+
+
+
+
+
+
+
