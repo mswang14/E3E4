@@ -1,3 +1,4 @@
 # E3E4
-Code used for behavioral data analysis and image analysis
+All raw data can be found in raw_data
+
 Instructions for pipeline preprocessing scripts can be found in VBA_preprocessing/Matlab Script Guide.docx
